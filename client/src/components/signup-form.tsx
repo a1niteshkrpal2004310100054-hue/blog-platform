@@ -1,24 +1,42 @@
+import { api } from "@/constant/api";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { useForm } from "react-hook-form";
 import type { SubmitHandler } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 
 interface Input {
-  name: string;
+  username: string;
   email: string;
   password: string;
 }
 
 const SignupForm = () => {
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<Input>();
+  } = useForm<Input>({
+    defaultValues: {
+      username: "",
+      email: "",
+      password: "",
+    },
+  });
 
-  const onSubmit: SubmitHandler<Input> = (data) => {
+  const onSubmit: SubmitHandler<Input> = async (data) => {
     console.log(data);
+
+    try {
+      const res = await api.post(`/user/register`, data);
+      console.log(res.data);
+      navigate("/login", { replace: true });
+    } catch (error) {
+      console.error(error);
+    }
   };
   return (
     <>
@@ -31,9 +49,9 @@ const SignupForm = () => {
                 id="username"
                 type="username"
                 placeholder="Name"
-                {...register("name", { required: true })}
+                {...register("username", { required: true })}
               />
-              {errors.name && (
+              {errors.username && (
                 <span className="text-red-400">name is required</span>
               )}
             </div>

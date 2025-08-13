@@ -1,18 +1,17 @@
 import * as React from "react";
-import { GalleryVerticalEnd, Home, Library, User } from "lucide-react";
+import { Home, Library, User } from "lucide-react";
 
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
-  SidebarHeader,
+  // SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   //   SidebarMenuSub,
   //   SidebarMenuSubButton,
   //   SidebarMenuSubItem,
-  SidebarRail,
 } from "@/components/ui/sidebar";
 // import { url } from "inspector";
 
@@ -21,7 +20,7 @@ const data = {
   navMain: [
     {
       title: "Home",
-      url: "#",
+      url: "/",
       icons: Home,
       //   items: [
       //     {
@@ -41,7 +40,7 @@ const data = {
     },
     {
       title: "Profile",
-      url: "#",
+      url: "/profile",
       icons: User,
     },
   ],
@@ -49,52 +48,26 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar {...props}>
-      <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
-              <a href="#">
-                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <GalleryVerticalEnd className="size-4" />
-                </div>
-                <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-medium">Documentation</span>
-                  <span className="">v1.0.0</span>
-                </div>
-              </a>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarHeader>
+    <Sidebar {...props} className="max-h-screen mt-16 md-mt-16">
       <SidebarContent>
         <SidebarGroup>
           <SidebarMenu>
             {data.navMain.map((item) => (
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton asChild>
-                  <a href={item.url} className="font-medium">
+                  <a
+                    href={item.url}
+                    className="font-semibold text-xl opacity-80"
+                  >
                     {item.icons && <item.icons />}
                     {item.title}
                   </a>
                 </SidebarMenuButton>
-                {/* {item.items?.length ? (
-                  <SidebarMenuSub>
-                    {item.items.map((item) => (
-                      <SidebarMenuSubItem key={item.title}>
-                        <SidebarMenuSubButton asChild isActive={item.isActive}>
-                          <a href={item.url}>{item.title}</a>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                    ))}
-                  </SidebarMenuSub>
-                ) : null} */}
               </SidebarMenuItem>
             ))}
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarRail />
     </Sidebar>
   );
 }

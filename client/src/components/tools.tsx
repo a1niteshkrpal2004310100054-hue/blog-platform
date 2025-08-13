@@ -4,7 +4,11 @@ import Image from "@editorjs/image";
 import Paragraph from "@editorjs/paragraph";
 import List from "@editorjs/List";
 import Header from "@editorjs/header";
+import { store } from "@/redux/store";
+import { addUploadImage } from "@/redux/blogSlice";
 import { api } from "@/constant/api";
+
+// const uploadedImages = new Set();
 
 export const tool = {
   header: Header,
@@ -25,21 +29,22 @@ export const tool = {
   image: {
     class: Image,
     config: {
-     uploader: {
-          async uploadByFile(file: File) {
-            const formData = new FormData();
-            formData.append("image", file);
+      uploader: {
+        async uploadByFile(file: File) {
+          const formData = new FormData();
+          formData.append("contentImage", file);
 
-            const res = await api.post(`/blog/upload`, formData)
-
-            const data = await res.json();
-            return {
-              success: 1,
-              file: {
-                url: data.url,
-              },
-            };
-          },
+          const { data } = await api.post(`/blog/blogUpload`, formData);
+          console.log(data.url);
+          store.dispatch(addUploadImage(data.url));
+          return {
+            success: 1,
+            file: {
+              url: data.url,
+            },
+          };
+        },
+      },
     },
   },
   Paragraph: Paragraph,

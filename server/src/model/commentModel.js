@@ -7,6 +7,10 @@ const CommentSchema = new Schema(
       required: true,
       trim: true,
     },
+    blog: {
+      type: Schema.Types.ObjectId,
+      ref: "Blog",
+    },
     author: [
       {
         type: Schema.Types.ObjectId,
@@ -18,7 +22,7 @@ const CommentSchema = new Schema(
       type: Date,
       default: Date.now,
     },
-    updatedAtAt: {
+    updatedAt: {
       type: Date,
       default: Date.now,
     },

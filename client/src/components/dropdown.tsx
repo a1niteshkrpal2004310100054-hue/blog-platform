@@ -6,7 +6,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Link } from "react-router-dom";
-import { User } from "lucide-react";
+// import { User } from "lucide-react";
+import CurentUserImages from "./curentUserImage";
 
 interface DropdowmItem {
   name: string;
@@ -20,7 +21,7 @@ const Dropdown: React.FC<DropdownProps> = ({ data }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <User className="w-10 h-10 p-0.5 rounded-full bg-gray-200" size={30} />
+        <CurentUserImages className="w-8 h-8" />
       </DropdownMenuTrigger>
       <DropdownMenuContent className="m-1">
         {data &&

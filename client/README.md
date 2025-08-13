@@ -67,3 +67,38 @@ export default tseslint.config([
   },
 ])
 ```
+
+
+
+
+// controllers/notificationController.js
+
+const Notification = require('../models/Notification');
+
+exports.getNotifications = async (req, res) => {
+  const userId = req.user.id;
+
+  const notifications = await Notification.find({ recipient: userId })
+    .populate('sender', 'name avatar')
+    .sort({ createdAt: -1 });
+
+  res.json(notifications);
+};
+
+exports.markAsRead = async (req, res) => {
+  const { id } = req.params;
+  await Notification.findByIdAndUpdate(id, { isRead: true });
+  res.json({ success: true });
+};
+
+exports.markAllAsRead = async (req, res) => {
+  const userId = req.user.id;
+  await Notification.updateMany({ recipient: userId, isRead: false }, { isRead: true });
+  res.json({ success: true });
+};
+
+exports.deleteNotification = async (req, res) => {
+  const { id } = req.params;
+  await Notification.findByIdAndDelete(id);
+  res.json({ success: true });
+};

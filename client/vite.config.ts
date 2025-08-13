@@ -11,4 +11,18 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    rollupOptions: {
+      input: {
+        main: "src/main.tsx",
+        sw: "src/constant/sw.ts",
+      },
+      output: {
+        entryFileNames: (chunk) => {
+          if (chunk.name === "sw") return "sw.js";
+          return "[name].[hash].js";
+        },
+      },
+    },
+  },
 });

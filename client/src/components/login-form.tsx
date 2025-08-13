@@ -28,8 +28,8 @@ const LoginForm = () => {
       const res = await api.post(`/user/login`, data);
       console.log(res.data);
       localStorage.setItem("authToken", res.data.accessToken);
-      toast.success(res.data.message);
       navigate("/", { replace: true });
+      toast.success(res.data.message);
     } catch (error) {
       toast.error("login Error");
       console.error(error);

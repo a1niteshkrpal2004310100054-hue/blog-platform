@@ -12,7 +12,7 @@ const generateAccessToken = (userId) => {
 
 // Generate Refresh Token
 const generateRefreshToken = (userId) => {
-  return jwt.sign({ userId }, process.env.REFRESH_TOKEN, { expiresIn: "1h" });
+  return jwt.sign({ userId }, process.env.REFRESH_TOKEN, { expiresIn: "2h" });
 };
 
 // register user
@@ -36,7 +36,6 @@ export const register = async (req, res) => {
       password: hashPassword,
     });
 
-    console.log("newUser", newUser);
     await newUser.save();
     return res
       .status(200)
@@ -70,8 +69,8 @@ export const userLogin = async (req, res) => {
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: false,
-      sameSite: "Lax",
+      secure: true,
+      sameSite: "lax",
       maxAge: 10 * 24 * 60 * 60 * 1000,
     });
 
@@ -84,29 +83,90 @@ export const userLogin = async (req, res) => {
   }
 };
 
-// export const editProfile = async (req, res) => {
-//   try {
-//     const userId = req.params.id;
-//     const { username, password, bio, email } = req.body;
+export const getUser = async (req, res) => {
+  const userId = req.user.userId;
 
-//     const user = await User.findOne({ userId });
-//     if (!user) {
-//       return res.status(400).json({ message: "User Not found" });
-//     }
+  if (!userId) {
+    return res.status(404).json({ message: "User not found" });
+  }
+  try {
+    const user = await User.findById(userId).select("-password -blogs");
+    return res.status(200).json({ message: "Accepted", user });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
 
-//     if (username) user.username = username;
-//     if (bio) user.bio = bio;
-//   } catch (error) {
-//     return res.status(500).json({ message: "Internal Server Error", error });
-//   }
-// };
+export const editProfile = async (req, res) => {
+  const userId = req.params.id;
+  console.log(userId, "userID");
+  const { username, bio, email } = req.body;
+
+  try {
+    const user = await User.findById(userId).select("-password -blogs");
+    console.log("user", user);
+    if (!user) {
+      return res.status(400).json({ message: "User Not found" });
+    }
+
+    if (username) user.username = username;
+    if (bio) user.bio = bio;
+    // if (password) {
+    //   const matchPassword = await bcrypt.compare(user.password, password);
+    //   if (matchPassword) {
+    //     const hashPassword = await bcrypt.hash(password, 10);
+    //     user.password = hashPassword;
+    //   }
+    // }
+    if (req.file) {
+      const host = req.protocol + "://" + req.host;
+      user.avatar = `${host}/uploads/${req.file.filename}`;
+    }
+
+    if (email) user.email = email;
+
+    await user.save();
+
+    return res.status(200).json({ message: "fields modified", user });
+  } catch (error) {
+    return res.status(500).json({ message: "Internal Server Error", error });
+  }
+};
 
 export const userLogout = async (_, res) => {
   try {
-    res.clearCookie("refreshtoke", "");
+    res.clearCookie("refreshtoken", "");
     return res.status(200).json("user looged out succesfully");
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Logout Error" });
   }
+};
+
+export const refresh = async (req, res) => {
+  const token = req.cookies.refreshToken;
+
+  console.log(token);
+  if (!token) {
+    return res.status(401).json({ message: "Missing Refresh Token" });
+  }
+
+  jwt.verify(token, process.env.REFRESH_TOKEN, (error, payload) => {
+    if (error) {
+      return res.status(401).json({ message: "Invalid Token" });
+    }
+
+    // console.log("payload", payload);
+    const accessToken = generateAccessToken(payload.userId);
+    const refreshToken = generateRefreshToken(payload.userId);
+    console.log(accessToken);
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
+      maxAge: 10 * 24 * 60 * 60 * 1000,
+    });
+    res.json({ accessToken });
+  });
 };

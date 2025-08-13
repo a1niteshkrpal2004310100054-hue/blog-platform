@@ -3,14 +3,16 @@ import Layout from "./pages/Layout";
 import LoginPage from "./pages/Login";
 import Logout from "./constant/Logout";
 import SignupPage from "./pages/Signup";
-import HomePage from "./pages/HomePage";
-import Blog from "./pages/Blog";
+// import HomePage from "./pages/HomePage";
+import CreateBlog from "./pages/CreateBlog";
 import { ProtectedRoutes } from "@/components/ProtectedRoute";
 import { Toaster } from "react-hot-toast";
 import Profile from "./pages/Profile";
+import BlogCards from "./pages/BlogCards";
+import BlogPage from "@/pages/BlogPage";
+// import { useAppSelector } from "./hooks/hooks";
 
 const App = () => {
-  const users = localStorage.getItem("authToken");
   return (
     <>
       <Toaster position="top-center" reverseOrder={false} />
@@ -18,14 +20,16 @@ const App = () => {
         <Route
           path="/"
           element={
-            <ProtectedRoutes user={users}>
+            <ProtectedRoutes>
               <Layout />
             </ProtectedRoutes>
           }
         >
-          <Route index element={<HomePage />} />
-          <Route path="/blog" element={<Blog />} />
+          {/* <Route index element={<HomePage />} /> */}
+          <Route index element={<BlogCards />} />
+          <Route path="/create" element={<CreateBlog />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/blogs-viewer/:id" element={<BlogPage />} />
         </Route>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />

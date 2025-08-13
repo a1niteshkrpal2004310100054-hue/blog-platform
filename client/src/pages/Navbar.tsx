@@ -1,26 +1,20 @@
 import Logo from "@/assets/react.svg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Bell } from "lucide-react";
+import { Search } from "lucide-react";
 import { Link } from "react-router-dom";
-// import { api } from "@/constant/api";
-// import toast from "react-hot-toast";
-// import { useNavigate } from "react-router-dom";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import DropDown from "@/components/dropdown";
+import Notify from "@/components/notify";
+import { useAppSelector } from "@/hooks/hooks";
+
+import type { RootState } from "@/redux/store";
 
 const Navbar = () => {
-  // const navigate = useNavigate();
-  // const handleLogout = async () => {
-  //   try {
-  //     const res = await api.post(`/user/logout`);
-  //     toast.success(res.data);
-
-  //     localStorage.removeItem("authToken");
-  //     navigate("/login", { replace: true });
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
+  const unReadMessage = useAppSelector(
+    (state: RootState) =>
+      state.notify.notifications.filter((n) => !n.isRead).length
+  );
 
   const pages = [
     {
@@ -29,7 +23,7 @@ const Navbar = () => {
     },
     {
       name: "setting",
-      url: "/setting",
+      url: "#",
     },
     {
       name: "Logout",
@@ -37,10 +31,13 @@ const Navbar = () => {
     },
   ];
 
+  const data = localStorage.getItem("authToken");
+
   return (
-    <nav className="w-full flex items-center border-b border-gray-300 h-[10vh] bg-white">
+    <nav className="w-full flex items-center border-b border-gray-300 h-16 bg-white">
       <div className="w-full flex justify-between items-center mx-5">
         <div className="flex items-center gap-4 relative">
+          <SidebarTrigger />
           <Link to="/">
             <img src={Logo} alt="Logo" className="p-2 ml-6 h-10" />
           </Link>
@@ -55,21 +52,24 @@ const Navbar = () => {
         </div>
 
         <div className="flex space-x-6 items-center">
-          <Link to="/blog">
+          <Link to="/create">
             <Button variant="secondary" className="w-20 hover:bg-gray-200">
               Write
             </Button>
           </Link>
+          {data ? (
+            <div className="relative w-[20%] space-x-1">
+              <Notify />
+              <span className="absolute -top-2 right-1 text-yellow-800">
+                {unReadMessage}
+              </span>
+            </div>
+          ) : (
+            <Link to="/login">
+              <Button className="w-20">Login</Button>
+            </Link>
+          )}
 
-          <Link to="/login">
-            <Button className="w-20">Login</Button>
-          </Link>
-          <Link
-            to="/notification"
-            className="p-2.5 rounded-full bg-gray-200 hover:bg-gray-400"
-          >
-            <Bell />
-          </Link>
           <DropDown data={pages} />
         </div>
       </div>

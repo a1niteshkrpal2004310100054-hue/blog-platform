@@ -7,7 +7,10 @@
   "compilerOptions": {
     "baseUrl": ".",
     "esModuleInterop": true,
+    "erasableSyntaxOnly": true,
     "allowSyntheticDefaultImports": true,
+    "target": "es6",
+    "lib": ["es6", "webworker"],
     "paths": {
       "@/*": ["./src/*"]
     }
